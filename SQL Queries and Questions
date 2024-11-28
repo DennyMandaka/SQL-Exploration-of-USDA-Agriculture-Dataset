@@ -1,0 +1,138 @@
+# SQL Queries and Questions
+
+-- Can you find out the total milk production for 2023? Your manager wants this information for the yearly report.
+--  table overview
+SELECT *
+FROM `sql-project-442801.Agriculture_Dataset.milk_production` milk
+LIMIT 10
+-- Answer
+SELECT
+ SUM (milk.Value) AS Total_MilkProd
+FROM
+ `sql-project-442801.Agriculture_Dataset.milk_production` milk
+WHERE
+ milk.Year = 2023;
+
+-- Which states had cheese production greater than 100 million in April 2023? The Cheese Department wants to focus their marketing efforts there.
+-- table overview
+SELECT *
+FROM `sql-project-442801.Agriculture_Dataset.cheese_production` cheese
+LIMIT 10
+-- Answer
+SELECT
+ cheese.State_ANSI,
+ SUM(SAFE_CAST(REPLACE(cheese.Value, ',', '') AS INT64)) AS Total_CheeseProd
+FROM 
+ `sql-project-442801.Agriculture_Dataset.cheese_production` cheese
+WHERE
+ cheese.Year = 2023 AND
+ cheese.Period = 'APR'
+GROUP BY
+ cheese.State_ANSI
+HAVING
+ SUM(SAFE_CAST(REPLACE(cheese.Value, ',', '') AS INT64)) > 100000000;
+
+-- Your manager wants to know how coffee production has changed over the years. What is the total value of coffee production for 2011?
+-- table overview
+SELECT *
+FROM `sql-project-442801.Agriculture_Dataset.coffee_production` coffee
+LIMIT 10
+-- Answer
+SELECT
+ coffee.Year,
+ SUM (coffee.Value) AS Total_CoffeeProd
+FROM
+ `sql-project-442801.Agriculture_Dataset.coffee_production` coffee
+WHERE
+ coffee.Year = 2011
+GROUP BY
+coffee.Year;
+
+-- There's a meeting with the Honey Council next week. Find the average honey production for 2022 so you're prepared.
+-- table overview
+SELECT *
+FROM `sql-project-442801.Agriculture_Dataset.honey_production` honey
+LIMIT 10
+-- Answer
+SELECT
+ honey.Year,
+ AVG (honey.Value) AS Avg_Honey
+FROM
+ `sql-project-442801.Agriculture_Dataset.honey_production` honey
+WHERE
+ honey.Year = 2022
+GROUP BY
+ honey.Year;
+
+-- The State Relations team wants a list of all states names with their corresponding ANSI codes. What is the State_ANSI code for Florida?
+-- Answer
+SELECT *
+FROM 
+ `sql-project-442801.Agriculture_Dataset.state_lookup` state
+WHERE
+ state.State LIKE 'FLORIDA';
+
+-- For a cross-commodity report, can you list all states with their cheese production values, even if they didn't produce any cheese in April of 2023? What is the total for NEW JERSEY?
+-- table overview
+SELECT *
+FROM `sql-project-442801.Agriculture_Dataset.cheese_production` cheese
+LIMIT 10
+-- Answer
+SELECT
+ cheese.State_ANSI,
+ state.State AS StateName,
+ SUM(SAFE_CAST(REPLACE(cheese.Value, ',', '') AS INT64)) AS Total_CheeseProd
+FROM 
+ `sql-project-442801.Agriculture_Dataset.cheese_production` cheese
+LEFT JOIN `sql-project-442801.Agriculture_Dataset.state_lookup` state ON
+ cheese.State_ANSI = state.State_ANSI
+WHERE
+ cheese.Year = 2023 AND
+ cheese.Period = 'APR'
+GROUP BY
+ cheese.State_ANSI,
+ state.State;
+
+-- List all states from state_lookup that are missing from milk_production in 2023.
+-- table overview
+SELECT *
+FROM `sql-project-442801.Agriculture_Dataset.milk_production` milk
+LIMIT 10
+
+SELECT *
+FROM `sql-project-442801.Agriculture_Dataset.state_lookup` state
+LIMIT 10
+-- Answer
+SELECT 
+ milk.State_ANSI,
+ state.State AS StateName
+FROM 
+  `sql-project-442801.Agriculture_Dataset.state_lookup` state
+LEFT JOIN 
+  `sql-project-442801.Agriculture_Dataset.milk_production` milk
+ON 
+  state.State_ANSI = milk.State_ANSI
+  AND milk.Year = 2023
+WHERE 
+  milk.State_ANSI IS NULL;
+
+-- List all states with their cheese production values, including states that didn't produce any cheese in April 2023. Did Delaware produce any cheese in April 2023?
+-- table overview 
+SELECT *
+FROM `sql-project-442801.Agriculture_Dataset.cheese_production` cheese
+LIMIT 10
+-- Answer
+SELECT
+ state.State_ANSI,
+ state.State AS StateName,
+ SUM(SAFE_CAST(REPLACE(cheese.Value, ',', '') AS INT64)) AS Total_CheeseProd
+FROM
+ `sql-project-442801.Agriculture_Dataset.state_lookup` state
+LEFT JOIN `sql-project-442801.Agriculture_Dataset.cheese_production` cheese
+ ON state.State_ANSI = cheese.State_ANSI
+WHERE
+ cheese.Year = 2023 AND
+ cheese.Period = 'APR'
+GROUP BY
+ state.State_ANSI,
+ state.State
