@@ -20,7 +20,7 @@ The datasets were sourced from the USDA’s open data portal and provided by UC 
 - Did Delaware produce any cheese in April 2023?
 
 ## Process
-The queries can be found on the "SQL Queries and Questions".
+The queries can be found on the <a href="https://github.com/DennyMandaka/SQL-Exploration-of-USDA-Agriculture-Dataset/blob/main/SQL%20Queries%20and%20Questions">"SQL Queries and Questions"</a>.
 
 ## Insights and Conclusion
 This project highlights the power of SQL in solving real-world business problems within the agricultural sector. The queries demonstrate skills in data aggregation, filtering, joining tables, handling missing data, and deriving actionable insights. These analyses not only provide specific answers but also reveal broader trends that can inform strategic decision-making in agriculture and related industries.
